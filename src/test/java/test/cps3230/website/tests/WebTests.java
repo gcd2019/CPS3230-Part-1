@@ -1,4 +1,4 @@
-package test.cps3230.web;
+package test.cps3230.website.tests;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +22,8 @@ public class WebTests {
     }
 
     @Test
-    public void testWebsiteSearch() {
-        driver.get("https://www.merchbar.com/");
+    public void testWebsiteSearch() throws Exception {
+        driver.get("https://www.scanmalta.com/shop/");
+        Thread.sleep(5000);
     }
 }
