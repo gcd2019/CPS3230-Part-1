@@ -21,7 +21,7 @@ public class WebTests {
     }
 
     @AfterEach
-    public void tearddown() {
+    public void teardown() {
         driver.quit();
     }
 
