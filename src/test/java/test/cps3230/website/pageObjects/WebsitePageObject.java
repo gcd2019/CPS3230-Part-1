@@ -21,7 +21,7 @@ public class WebsitePageObject {
     List<String> descriptions = new ArrayList<>();
     List<String> urls = new ArrayList<>();
     List<String> imageUrls = new ArrayList<>();
-    List<String> prices = new ArrayList<>();
+    List<Integer> prices = new ArrayList<>();
 
     public WebsitePageObject(WebDriver driver) {
         this.driver = driver;
@@ -37,8 +37,8 @@ public class WebsitePageObject {
         List<WebElement> titlesList = driver.findElements(By.className("title"));
         scrapeTitles(titlesList);
 
-        // Scrapping 5 descriptions
-        List<WebElement> descriptionsList = driver.findElements(By.className("title"));
+        // Scrapping 5 authors
+        List<WebElement> descriptionsList = driver.findElements(By.xpath("//p[@class = 'author']/span/a/span"));
         scrapeDescriptions(descriptionsList);
 
         // Scrapping 5 urls
@@ -54,7 +54,7 @@ public class WebsitePageObject {
         scrapePrices(pricesList);
 
         // We need to send post requests
-        sendPostRequests(titles.get(1), descriptions.get(1), urls.get(1), imageUrls.get(1), 2);
+        sendPostRequests(titles.get(0), descriptions.get(0), urls.get(0), imageUrls.get(0), prices.get(0));
     }
 
     public void scrapeTitles(List<WebElement> productList) {
@@ -83,7 +83,10 @@ public class WebsitePageObject {
 
     public void scrapePrices(List<WebElement> productList) {
         for (int i = 0; i < 5; i++) {
-            prices.add(i, productList.get(i).getText());
+            String newString = productList.get(i).getText().replace("€","");
+            String newString2 = newString.replace(",", ".");
+            double d = Double.parseDouble(newString2)*100;
+            prices.add(i, (int) d);
         }
     }
 
