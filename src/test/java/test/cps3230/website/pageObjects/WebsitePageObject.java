@@ -27,64 +27,64 @@ public class WebsitePageObject {
         this.driver = driver;
     }
 
-    public void searchForProduct(String product) throws Exception {
+    public void searchForProduct(String product, int numberOfProductsToScrape) throws Exception {
         WebElement searchField = driver.findElement(By.name("searchTerm"));
         searchField.sendKeys(product);
         WebElement searchButton = driver.findElement(By.className("header-search-btn"));
         searchButton.submit();
 
-        // Scrapping 5 titles
+        // Scrapping titles
         List<WebElement> titlesList = driver.findElements(By.className("title"));
-        scrapeTitles(titlesList);
+        scrapeTitles(titlesList, numberOfProductsToScrape);
 
-        // Scrapping 5 authors
+        // Scrapping authors
         List<WebElement> descriptionsList = driver.findElements(By.xpath("//p[@class = 'author']/span/a/span"));
-        scrapeDescriptions(descriptionsList);
+        scrapeDescriptions(descriptionsList, numberOfProductsToScrape);
 
-        // Scrapping 5 urls
+        // Scrapping urls
         List<WebElement> urlsList = driver.findElements(By.xpath("//h3[@class = 'title']/a"));
-        scrapeUrls(urlsList);
+        scrapeUrls(urlsList, numberOfProductsToScrape);
 
-        // Scrapping 5 image urls
+        // Scrapping image urls
         List<WebElement> imageUrlsList = driver.findElements(By.xpath("//img[@class = 'lazy loaded']"));
-        scrapeImageUrls(imageUrlsList);
+        scrapeImageUrls(imageUrlsList, numberOfProductsToScrape);
 
-        // Scrapping 5 prices
+        // Scrapping prices
         List<WebElement> pricesList = driver.findElements(By.className("sale-price"));
-        scrapePrices(pricesList);
+        scrapePrices(pricesList, numberOfProductsToScrape);
 
         // We need to send post requests
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < numberOfProductsToScrape; i++) {
             sendPostRequests(titles.get(i), descriptions.get(i), urls.get(i), imageUrls.get(i), prices.get(i));
         }
     }
 
-    public void scrapeTitles(List<WebElement> productList) {
-        for (int i = 0; i < 5; i++) {
+    public void scrapeTitles(List<WebElement> productList, int numberOfProductsToScrape) {
+        for (int i = 0; i < numberOfProductsToScrape; i++) {
             titles.add(i, productList.get(i).getText());
         }
     }
 
-    public void scrapeDescriptions(List<WebElement> productList) {
-        for (int i = 0; i < 5; i++) {
+    public void scrapeDescriptions(List<WebElement> productList, int numberOfProductsToScrape) {
+        for (int i = 0; i < numberOfProductsToScrape; i++) {
             descriptions.add(i, productList.get(i).getText());
         }
     }
 
-    public void scrapeUrls(List<WebElement> productList) {
-        for (int i = 0; i < 5; i++) {
+    public void scrapeUrls(List<WebElement> productList, int numberOfProductsToScrape) {
+        for (int i = 0; i < numberOfProductsToScrape; i++) {
             urls.add(i, productList.get(i).getAttribute("href"));
         }
     }
 
-    public void scrapeImageUrls(List<WebElement> productList) {
-        for (int i = 0; i < 5; i++) {
+    public void scrapeImageUrls(List<WebElement> productList, int numberOfProductsToScrape) {
+        for (int i = 0; i < numberOfProductsToScrape; i++) {
             imageUrls.add(i, productList.get(i).getAttribute("src"));
         }
     }
 
-    public void scrapePrices(List<WebElement> productList) {
-        for (int i = 0; i < 5; i++) {
+    public void scrapePrices(List<WebElement> productList, int numberOfProductsToScrape) {
+        for (int i = 0; i < numberOfProductsToScrape; i++) {
             String newString = productList.get(i).getText().replace("€","");
             String newString2 = newString.replace(",", ".");
             double d = Double.parseDouble(newString2)*100;
