@@ -29,6 +29,6 @@ public class WebTests {
     public void testWebsiteSearch() throws Exception {
         driver.get("https://www.bookdepository.com/");
         websitePageObject.searchForProduct("batman");
-        Thread.sleep(10000);
+        Thread.sleep(5000);
     }
 }
