@@ -54,7 +54,9 @@ public class WebsitePageObject {
         scrapePrices(pricesList);
 
         // We need to send post requests
-        sendPostRequests(titles.get(0), descriptions.get(0), urls.get(0), imageUrls.get(0), prices.get(0));
+        for (int i = 0; i < 5; i++) {
+            sendPostRequests(titles.get(i), descriptions.get(i), urls.get(i), imageUrls.get(i), prices.get(i));
+        }
     }
 
     public void scrapeTitles(List<WebElement> productList) {
