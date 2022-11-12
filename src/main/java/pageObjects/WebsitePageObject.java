@@ -23,6 +23,8 @@ public class WebsitePageObject {
     public List<String> imageUrls = new ArrayList<>();
     public List<Integer> prices = new ArrayList<>();
 
+    public HttpResponse <String> response;
+
     public WebsitePageObject(WebDriver driver) {
         this.driver = driver;
     }
@@ -61,7 +63,8 @@ public class WebsitePageObject {
         // Alerts are only sent if the results scraped from the website are equal or bigger than 5
         if (titles.size() >= 5 && descriptions.size() >= 5 && urls.size() >= 5 && imageUrls.size() >= 5
                 && prices.size() >= 5){
-            sendPostRequests();
+            for (int i = 0; i < 5; i++)
+                sendPostRequests(titles.get(i), descriptions.get(i), urls.get(i), imageUrls.get(i), prices.get(i));
         }
     }
 
@@ -158,33 +161,32 @@ public class WebsitePageObject {
         }
     }
 
-    public void sendPostRequests() throws Exception {
-        for (int i = 0; i < 5; i++){
-            AlertRequest alertRequest = new AlertRequest();
+    public void sendPostRequests(String title, String description, String url, String imageUrl,
+                                 int price) throws Exception {
+        AlertRequest alertRequest = new AlertRequest();
 
-            alertRequest.setAlertType(6);
-            alertRequest.setHeading(titles.get(i));
-            alertRequest.setDescription(descriptions.get(i));
-            alertRequest.setUrl(urls.get(i));
-            alertRequest.setImageUrl(imageUrls.get(i));
-            alertRequest.setPostedBy("e7ee93d2-cf55-45da-a41e-6581361e3f20");
-            alertRequest.setPriceInCents(prices.get(i));
+        alertRequest.setAlertType(6);
+        alertRequest.setHeading(title);
+        alertRequest.setDescription(description);
+        alertRequest.setUrl(url);
+        alertRequest.setImageUrl(imageUrl);
+        alertRequest.setPostedBy("e7ee93d2-cf55-45da-a41e-6581361e3f20");
+        alertRequest.setPriceInCents(price);
 
-            Gson gson = new Gson();
-            String jsonRequest = gson.toJson(alertRequest);
+        Gson gson = new Gson();
+        String jsonRequest = gson.toJson(alertRequest);
 
-            System.out.println(jsonRequest);
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI("https://api.marketalertum.com/Alert"))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonRequest))
-                    .build();
+        System.out.println(jsonRequest);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(new URI("https://api.marketalertum.com/Alert"))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonRequest))
+                .build();
 
-            HttpClient httpClient = HttpClient.newHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
 
-            HttpResponse <String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-            System.out.println(response.body());
-        }
+        System.out.println(response.body());
     }
 }
