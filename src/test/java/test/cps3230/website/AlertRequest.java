@@ -1,6 +1,6 @@
 package test.cps3230.website;
 
-public class Information {
+public class AlertRequest {
     private int alertType;
     private String heading;
     private String description;

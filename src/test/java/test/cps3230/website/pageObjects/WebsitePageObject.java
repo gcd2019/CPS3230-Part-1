@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import test.cps3230.website.Information;
+import test.cps3230.website.AlertRequest;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -17,17 +17,17 @@ public class WebsitePageObject {
 
     WebDriver driver;
 
-    List<String> titles = new ArrayList<>();
-    List<String> descriptions = new ArrayList<>();
-    List<String> urls = new ArrayList<>();
-    List<String> imageUrls = new ArrayList<>();
-    List<Integer> prices = new ArrayList<>();
+    public List<String> titles = new ArrayList<>();
+    public List<String> descriptions = new ArrayList<>();
+    public List<String> urls = new ArrayList<>();
+    public List<String> imageUrls = new ArrayList<>();
+    public List<Integer> prices = new ArrayList<>();
 
     public WebsitePageObject(WebDriver driver) {
         this.driver = driver;
     }
 
-    public void searchForProduct(String product, int numberOfProductsToScrape) throws Exception {
+    public void searchForProduct(String product) throws Exception {
         WebElement searchField = driver.findElement(By.name("searchTerm"));
         searchField.sendKeys(product);
         WebElement searchButton = driver.findElement(By.className("header-search-btn"));
@@ -35,56 +35,66 @@ public class WebsitePageObject {
 
         // Scrapping titles
         List<WebElement> titlesList = driver.findElements(By.className("title"));
-        scrapeTitles(titlesList, numberOfProductsToScrape);
+        if (titlesList.size() >= 5)
+            scrapeTitles(titlesList);
 
         // Scrapping authors
         List<WebElement> descriptionsList = driver.findElements(By.xpath("//p[@class = 'author']/span/a/span"));
-        scrapeDescriptions(descriptionsList, numberOfProductsToScrape);
+        if (descriptionsList.size() >= 5)
+            scrapeDescriptions(descriptionsList);
 
         // Scrapping urls
         List<WebElement> urlsList = driver.findElements(By.xpath("//h3[@class = 'title']/a"));
-        scrapeUrls(urlsList, numberOfProductsToScrape);
+        if (urlsList.size() >= 5)
+            scrapeUrls(urlsList);
 
         // Scrapping image urls
+        // This is checking if the number of image urls in the website is bigger than 7
+        // since when there are no results there are already another 2 image urls used in other parts of the website.
         List<WebElement> imageUrlsList = driver.findElements(By.xpath("//img[@class = 'lazy loaded']"));
-        scrapeImageUrls(imageUrlsList, numberOfProductsToScrape);
+        if (imageUrlsList.size() >= 7)
+            scrapeImageUrls(imageUrlsList);
 
         // Scrapping prices
         List<WebElement> pricesList = driver.findElements(By.className("sale-price"));
-        scrapePrices(pricesList, numberOfProductsToScrape);
+        if (pricesList.size() >= 5)
+            scrapePrices(pricesList);
 
         // We need to send post requests
-        for (int i = 0; i < numberOfProductsToScrape; i++) {
-            sendPostRequests(titles.get(i), descriptions.get(i), urls.get(i), imageUrls.get(i), prices.get(i));
+        if (titles.size() != 0 || descriptions.size() != 0 || urls.size() != 0 || imageUrls.size() != 0
+                || prices.size() != 0){
+            for (int i = 0; i < 5; i++) {
+                sendPostRequests(titles.get(i), descriptions.get(i), urls.get(i), imageUrls.get(i), prices.get(i));
+            }
         }
     }
 
-    public void scrapeTitles(List<WebElement> productList, int numberOfProductsToScrape) {
-        for (int i = 0; i < numberOfProductsToScrape; i++) {
+    public void scrapeTitles(List<WebElement> productList) {
+        for (int i = 0; i < 5; i++) {
             titles.add(i, productList.get(i).getText());
         }
     }
 
-    public void scrapeDescriptions(List<WebElement> productList, int numberOfProductsToScrape) {
-        for (int i = 0; i < numberOfProductsToScrape; i++) {
+    public void scrapeDescriptions(List<WebElement> productList) {
+        for (int i = 0; i < 5; i++) {
             descriptions.add(i, productList.get(i).getText());
         }
     }
 
-    public void scrapeUrls(List<WebElement> productList, int numberOfProductsToScrape) {
-        for (int i = 0; i < numberOfProductsToScrape; i++) {
+    public void scrapeUrls(List<WebElement> productList) {
+        for (int i = 0; i < 5; i++) {
             urls.add(i, productList.get(i).getAttribute("href"));
         }
     }
 
-    public void scrapeImageUrls(List<WebElement> productList, int numberOfProductsToScrape) {
-        for (int i = 0; i < numberOfProductsToScrape; i++) {
+    public void scrapeImageUrls(List<WebElement> productList) {
+        for (int i = 0; i < 5; i++) {
             imageUrls.add(i, productList.get(i).getAttribute("src"));
         }
     }
 
-    public void scrapePrices(List<WebElement> productList, int numberOfProductsToScrape) {
-        for (int i = 0; i < numberOfProductsToScrape; i++) {
+    public void scrapePrices(List<WebElement> productList) {
+        for (int i = 0; i < 5; i++) {
             String newString = productList.get(i).getText().replace("€","");
             String newString2 = newString.replace(",", ".");
             double d = Double.parseDouble(newString2)*100;
@@ -93,18 +103,18 @@ public class WebsitePageObject {
     }
 
     public void sendPostRequests(String title, String description, String bookUrl, String imageUrl, int price) throws Exception {
-        Information information = new Information();
+        AlertRequest alertRequest = new AlertRequest();
 
-        information.setAlertType(6);
-        information.setHeading(title);
-        information.setDescription(description);
-        information.setUrl(bookUrl);
-        information.setImageUrl(imageUrl);
-        information.setPostedBy("e7ee93d2-cf55-45da-a41e-6581361e3f20");
-        information.setPriceInCents(price);
+        alertRequest.setAlertType(6);
+        alertRequest.setHeading(title);
+        alertRequest.setDescription(description);
+        alertRequest.setUrl(bookUrl);
+        alertRequest.setImageUrl(imageUrl);
+        alertRequest.setPostedBy("e7ee93d2-cf55-45da-a41e-6581361e3f20");
+        alertRequest.setPriceInCents(price);
 
         Gson gson = new Gson();
-        String jsonRequest = gson.toJson(information);
+        String jsonRequest = gson.toJson(alertRequest);
 
         System.out.println(jsonRequest);
         HttpRequest request = HttpRequest.newBuilder()
@@ -119,5 +129,4 @@ public class WebsitePageObject {
 
         System.out.println(response.body());
     }
-
 }

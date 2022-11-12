@@ -1,6 +1,7 @@
 package test.cps3230.website.tests;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
@@ -16,6 +17,7 @@ public class WebTests {
     public void setup() {
         System.setProperty("webdriver.chrome.driver", "C:/Users/memos/webtesting/chromedriver/chromedriver.exe");
         driver = new ChromeDriver();
+        driver.get("https://www.bookdepository.com/");
 
         websitePageObject = new WebsitePageObject(driver);
     }
@@ -26,9 +28,22 @@ public class WebTests {
     }
 
     @Test
-    public void testWebsiteSearch() throws Exception {
-        driver.get("https://www.bookdepository.com/");
-        websitePageObject.searchForProduct("batman",5);
-        Thread.sleep(5000);
+    public void testSimpleWebsiteSearch() throws Exception {
+        websitePageObject.searchForProduct("batman");
+        Assertions.assertTrue(websitePageObject.titles.size() > 0);
+        Assertions.assertTrue(websitePageObject.descriptions.size() > 0);
+        Assertions.assertTrue(websitePageObject.urls.size() > 0);
+        Assertions.assertTrue(websitePageObject.imageUrls.size() > 0);
+        Assertions.assertTrue(websitePageObject.prices.size() > 0);
+    }
+
+    @Test
+    public void testEmptyWebsiteSearch() throws Exception {
+        websitePageObject.searchForProduct("");
+        Assertions.assertEquals(0, websitePageObject.titles.size());
+        Assertions.assertEquals(0, websitePageObject.descriptions.size());
+        Assertions.assertEquals(0, websitePageObject.urls.size());
+        Assertions.assertEquals(0, websitePageObject.imageUrls.size());
+        Assertions.assertEquals(0, websitePageObject.prices.size());
     }
 }
