@@ -1,4 +1,4 @@
-package test.cps3230.website;
+package jsonConstructor;
 
 public class AlertRequest {
     private int alertType;
