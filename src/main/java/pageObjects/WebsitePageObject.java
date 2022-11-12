@@ -27,11 +27,8 @@ public class WebsitePageObject {
         this.driver = driver;
     }
 
-    public void searchForProduct(String product) throws Exception {
-        WebElement searchField = driver.findElement(By.name("searchTerm"));
-        searchField.sendKeys(product);
-        WebElement searchButton = driver.findElement(By.className("header-search-btn"));
-        searchButton.submit();
+    public void productScrape(String product) throws Exception {
+        searchForProduct(product);
 
         // Scrapping titles
         List<WebElement> titlesElementList = getTitles();
@@ -66,6 +63,13 @@ public class WebsitePageObject {
                 && prices.size() >= 5){
             sendPostRequests();
         }
+    }
+
+    public void searchForProduct(String product) {
+        WebElement searchField = driver.findElement(By.name("searchTerm"));
+        searchField.sendKeys(product);
+        WebElement searchButton = driver.findElement(By.className("header-search-btn"));
+        searchButton.submit();
     }
 
     public List<WebElement> getTitles(){
