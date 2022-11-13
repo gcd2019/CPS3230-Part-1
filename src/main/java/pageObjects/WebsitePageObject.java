@@ -69,16 +69,15 @@ public class WebsitePageObject {
 
         // We need to send post requests
         // Alerts are only sent if the results scraped from the website are equal or bigger than 5
-        if (scrapingService != null){
-            if (scrapingService.getTitles().size() >= 5 && scrapingService.getDescriptions().size() >= 5 &&
-                    scrapingService.getUrls().size() >= 5 && scrapingService.getImageUrls().size() >= 5 &&
-                    scrapingService.getPrices().size() >= 5){
-                for (int i = 0; i < 5; i++){
-                    if (apiService != null)
-                        apiService.sendPostRequests(scrapingService.getTitles().get(i),
-                                scrapingService.getDescriptions().get(i), scrapingService.getUrls().get(i),
-                                scrapingService.getImageUrls().get(i), scrapingService.getPrices().get(i));
-                }
+        assert scrapingService != null;
+        if (scrapingService.getTitles().size() >= 5 && scrapingService.getDescriptions().size() >= 5 &&
+                scrapingService.getUrls().size() >= 5 && scrapingService.getImageUrls().size() >= 5 &&
+                scrapingService.getPrices().size() >= 5){
+            for (int i = 0; i < 5; i++){
+                if (apiService != null)
+                    apiService.sendPostRequests(scrapingService.getTitles().get(i),
+                            scrapingService.getDescriptions().get(i), scrapingService.getUrls().get(i),
+                            scrapingService.getImageUrls().get(i), scrapingService.getPrices().get(i));
             }
         }
     }

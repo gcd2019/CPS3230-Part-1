@@ -24,7 +24,7 @@ public class WebDriverTests {
 
         websitePageObject.setWebsiteElementsService(websiteElementsService);
 
-        websiteElementsService.setUpDriver();
+        //websiteElementsService.setUpDriver();
     }
 
     @AfterEach

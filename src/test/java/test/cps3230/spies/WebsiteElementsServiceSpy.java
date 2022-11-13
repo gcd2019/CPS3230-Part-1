@@ -11,10 +11,10 @@ import java.util.List;
 public class WebsiteElementsServiceSpy implements WebsiteElementsService {
     protected WebDriver driver;
 
-    public void setUpDriver(){
+    public void setUpDriver(String url){
         System.setProperty("webdriver.chrome.driver", "C:/Users/memos/webtesting/chromedriver/chromedriver.exe");
         driver = new ChromeDriver();
-        driver.get("https://www.bookdepository.com/");
+        driver.get(url);
     }
 
     public void quitDriver(){
