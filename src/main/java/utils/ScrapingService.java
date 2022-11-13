@@ -2,26 +2,67 @@ package utils;
 
 import org.openqa.selenium.WebElement;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public interface ScrapingService {
-    void scrapeTitles(List<WebElement> titlesList);
+public class ScrapingService {
+    protected List<String> titles = new ArrayList<>();
+    protected List<String> descriptions = new ArrayList<>();
+    protected List<String> urls = new ArrayList<>();
+    protected List<String> imageUrls = new ArrayList<>();
+    protected List<Integer> prices = new ArrayList<>();
 
-    void scrapeDescriptions(List<WebElement> descriptionsList);
+    public void scrapeTitles(List<WebElement> titlesList, int n) {
+        for (int i = 0; i < n; i++) {
+            titles.add(i, titlesList.get(i).getText());
+        }
+    }
 
-    void scrapeUrls(List<WebElement> urlsList);
+    public void scrapeDescriptions(List<WebElement> descriptionsList, int n) {
+        for (int i = 0; i < n; i++) {
+            descriptions.add(i, descriptionsList.get(i).getText());
+        }
+    }
 
-    void scrapeImageUrls(List<WebElement> imageUrlsList);
+    public void scrapeUrls(List<WebElement> urlsList, int n) {
+        for (int i = 0; i < n; i++) {
+            urls.add(i, urlsList.get(i).getAttribute("href"));
+        }
+    }
 
-    void scrapePrices(List<WebElement> pricesList);
+    public void scrapeImageUrls(List<WebElement> imageUrlsList, int n) {
+        for (int i = 0; i < n - 2; i++) {
+            imageUrls.add(i, imageUrlsList.get(i).getAttribute("src"));
+        }
+    }
 
-    List<String> getTitles();
+    public void scrapePrices(List<WebElement> pricesList, int n) {
+        for (int i = 0; i < n; i++) {
+            String newString = pricesList.get(i).getText().replace("€","");
+            String newString2 = newString.replace(",", ".");
+            double d = Double.parseDouble(newString2)*100;
+            prices.add(i, (int) d);
+        }
+    }
 
-    List<String> getDescriptions();
+    public List<String> getTitles(){
+        return titles;
+    }
 
-    List<String> getUrls();
+    public List<String> getDescriptions(){
+        return descriptions;
+    }
 
-    List<String> getImageUrls();
+    public List<String> getUrls(){
+        return urls;
+    }
 
-    List<Integer> getPrices();
+    public List<String> getImageUrls(){
+        return imageUrls;
+    }
+
+    public List<Integer> getPrices(){
+        return prices;
+    }
+
 }

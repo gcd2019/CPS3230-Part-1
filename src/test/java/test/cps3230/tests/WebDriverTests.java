@@ -6,21 +6,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 import pageObjects.WebsitePageObject;
-import test.cps3230.spies.WebsiteElementsServiceSpy;
+import utils.WebsiteElementsService;
 
 import java.util.List;
 
 public class WebDriverTests {
     WebDriver driver;
     WebsitePageObject websitePageObject;
-    WebsiteElementsServiceSpy websiteElementsService;
+    WebsiteElementsService websiteElementsService;
 
     @BeforeEach
     public void setup() {
         websitePageObject = new WebsitePageObject();
-        websiteElementsService = new WebsiteElementsServiceSpy();
+        websiteElementsService = new WebsiteElementsService();
 
         websitePageObject.setWebsiteElementsService(websiteElementsService);
 

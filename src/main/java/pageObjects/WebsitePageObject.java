@@ -25,7 +25,7 @@ public class WebsitePageObject {
         this.websiteElementsService = websiteElementsService;
     }
 
-    public void productScrape(String product) throws Exception {
+    public void productScrape(String product, int n) throws Exception {
         if (websiteElementsService != null)
             websiteElementsService.searchForProduct(product);
 
@@ -34,21 +34,21 @@ public class WebsitePageObject {
         List<WebElement> titlesElementList = websiteElementsService.getTitlesElements();
         if (titlesElementList.size() > 0){
             if (scrapingService != null)
-                scrapingService.scrapeTitles(titlesElementList);
+                scrapingService.scrapeTitles(titlesElementList, n);
         }
 
         // Scrapping authors
         List<WebElement> descriptionsElementList = websiteElementsService.getDescriptionsElements();
         if (descriptionsElementList.size() > 0){
             if (scrapingService != null)
-                scrapingService.scrapeDescriptions(descriptionsElementList);
+                scrapingService.scrapeDescriptions(descriptionsElementList, n);
         }
 
         // Scrapping urls
         List<WebElement> urlsElementList = websiteElementsService.getUrlsElements();
         if (urlsElementList.size() > 0){
             if (scrapingService != null)
-                scrapingService.scrapeUrls(urlsElementList);
+                scrapingService.scrapeUrls(urlsElementList, n);
         }
 
         // Scrapping image urls
@@ -57,28 +57,24 @@ public class WebsitePageObject {
         List<WebElement> imageUrlsElementList = websiteElementsService.getImageUrlsElements();
         if (imageUrlsElementList.size() > 2){
             if (scrapingService != null)
-                scrapingService.scrapeImageUrls(imageUrlsElementList);
+                scrapingService.scrapeImageUrls(imageUrlsElementList, n);
         }
 
         // Scrapping prices
         List<WebElement> pricesElementList = websiteElementsService.getPricesElements();
         if (pricesElementList.size() > 0){
             if (scrapingService != null)
-                scrapingService.scrapePrices(pricesElementList);
+                scrapingService.scrapePrices(pricesElementList, n);
         }
 
         // We need to send post requests
         // Alerts are only sent if the results scraped from the website are equal or bigger than 5
         assert scrapingService != null;
-        if (scrapingService.getTitles().size() >= 5 && scrapingService.getDescriptions().size() >= 5 &&
-                scrapingService.getUrls().size() >= 5 && scrapingService.getImageUrls().size() >= 5 &&
-                scrapingService.getPrices().size() >= 5){
-            for (int i = 0; i < 5; i++){
-                if (apiService != null)
-                    apiService.sendPostRequests(scrapingService.getTitles().get(i),
-                            scrapingService.getDescriptions().get(i), scrapingService.getUrls().get(i),
-                            scrapingService.getImageUrls().get(i), scrapingService.getPrices().get(i));
-            }
+        for (int i = 0; i < n; i++){
+            if (apiService != null)
+                apiService.sendPostRequests(6, scrapingService.getTitles().get(i),
+                        scrapingService.getDescriptions().get(i), scrapingService.getUrls().get(i),
+                        scrapingService.getImageUrls().get(i), scrapingService.getPrices().get(i));
         }
     }
 }

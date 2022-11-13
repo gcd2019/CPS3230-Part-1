@@ -5,20 +5,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import pageObjects.WebsitePageObject;
-import test.cps3230.spies.ScrapingServiceSpy;
-import test.cps3230.spies.WebsiteElementsServiceSpy;
-import utils.WebsiteElementsProvider;
+import utils.ScrapingService;
+import utils.WebsiteElementsService;
 
 public class WebsiteTests {
     WebsitePageObject websitePageObject;
-    WebsiteElementsServiceSpy websiteElementsService;
-    ScrapingServiceSpy scrapingService;
+    WebsiteElementsService websiteElementsService;
+    ScrapingService scrapingService;
 
     @BeforeEach
     public void setup() {
         websitePageObject = new WebsitePageObject();
         //websiteElementsService = new WebsiteElementsServiceSpy();
-        scrapingService = new ScrapingServiceSpy();
+        scrapingService = new ScrapingService();
 
         websitePageObject.setScrapingService(scrapingService);
         websitePageObject.setWebsiteElementsService(websiteElementsService);
@@ -31,13 +30,13 @@ public class WebsiteTests {
 //        websiteElementsService.quitDriver();
 //    }
 
-    @Test
-    public void testSearchFunctionalityForAString(){
-        WebsiteElementsProvider websiteElementsProvider = Mockito.mock(WebsiteElementsProvider.class);
-        Mockito.when(websiteElementsProvider.getResult("batman")).thenReturn(websiteElementsProvider.result1);
-
-        Assertions.assertEquals("Search results for batman", websiteElementsProvider.getResult("batman"));
-    }
+//    @Test
+//    public void testSearchFunctionalityForAString(){
+//        WebsiteElementsProvider websiteElementsProvider = Mockito.mock(WebsiteElementsProvider.class);
+//        Mockito.when(websiteElementsProvider.getResult("batman")).thenReturn(websiteElementsProvider.result1);
+//
+//        Assertions.assertEquals("Search results for batman", websiteElementsProvider.getResult("batman"));
+//    }
 //    @Test
 //    public void testSearchFunctionalityForAString() {
 //        websiteElementsService.searchForProduct("batman");
@@ -48,13 +47,13 @@ public class WebsiteTests {
 //        Assertions.assertEquals("Search results for batman", resultString);
 //    }
 
-    @Test
-    public void testSearchFunctionalityForAnEmptyString() {
-        WebsiteElementsProvider websiteElementsProvider = Mockito.mock(WebsiteElementsProvider.class);
-        Mockito.when(websiteElementsProvider.getResult("")).thenReturn(websiteElementsProvider.result2);
-
-        Assertions.assertEquals("Advanced Search", websiteElementsProvider.getResult(""));
-    }
+//    @Test
+//    public void testSearchFunctionalityForAnEmptyString() {
+//        WebsiteElementsProvider websiteElementsProvider = Mockito.mock(WebsiteElementsProvider.class);
+//        Mockito.when(websiteElementsProvider.getResult("")).thenReturn(websiteElementsProvider.result2);
+//
+//        Assertions.assertEquals("Advanced Search", websiteElementsProvider.getResult(""));
+//    }
 
 //    @Test
 //    public void testSearchFunctionalityForAnEmptyString() {
@@ -65,30 +64,30 @@ public class WebsiteTests {
 //        Assertions.assertEquals("Advanced Search", resultString);
 //    }
 
-      @Test
-      public void testScrapeTitlesOfWebsiteSearchWithFiveResultsOrMore() {
-          WebsiteElementsProvider websiteElementsProvider = Mockito.mock(WebsiteElementsProvider.class);
-          Mockito.when(websiteElementsProvider.getTitles("batman")).
-                  thenReturn(websiteElementsProvider.titles);
-
-          String[] result = {"batman 1", "batman 2", "batman 3", "batman 4", "batman 5"};
-          Assertions.assertArrayEquals(result, websiteElementsProvider.getTitles("batman"));
-      }
+//      @Test
+//      public void testScrapeTitlesOfWebsiteSearchWithFiveResultsOrMore() {
+//          WebsiteElementsProvider websiteElementsProvider = Mockito.mock(WebsiteElementsProvider.class);
+//          Mockito.when(websiteElementsProvider.getTitles("batman")).
+//                  thenReturn(websiteElementsProvider.titles);
+//
+//          String[] result = {"batman 1", "batman 2", "batman 3", "batman 4", "batman 5"};
+//          Assertions.assertArrayEquals(result, websiteElementsProvider.getTitles("batman"));
+//      }
 //    @Test
 //    public void testTitlesOfWebsiteSearchWithFiveResultsOrMore() throws Exception {
 //        websitePageObject.productScrape("batman");
 //        Assertions.assertTrue(scrapingService.getTitles().size() >= 5);
 //    }
 
-      @Test
-      public void testScrapeDescriptionsOfWebsiteSearchWithFiveResultsOrMore(){
-          WebsiteElementsProvider websiteElementsProvider = Mockito.mock(WebsiteElementsProvider.class);
-          Mockito.when(websiteElementsProvider.getDescriptions("batman")).
-                  thenReturn(websiteElementsProvider.titles);
-
-          String[] result = {"description1", "description2", "description3", "description4", "description5"};
-          Assertions.assertArrayEquals(result, websiteElementsProvider.getDescriptions("batman"));
-      }
+//      @Test
+//      public void testScrapeDescriptionsOfWebsiteSearchWithFiveResultsOrMore(){
+//          WebsiteElementsProvider websiteElementsProvider = Mockito.mock(WebsiteElementsProvider.class);
+//          Mockito.when(websiteElementsProvider.getDescriptions("batman")).
+//                  thenReturn(websiteElementsProvider.titles);
+//
+//          String[] result = {"description1", "description2", "description3", "description4", "description5"};
+//          Assertions.assertArrayEquals(result, websiteElementsProvider.getDescriptions("batman"));
+//      }
 //    @Test
 //    public void testDescriptionsOfWebsiteSearchWithFiveResultsOrMore() throws Exception {
 //        websitePageObject.productScrape("batman");
