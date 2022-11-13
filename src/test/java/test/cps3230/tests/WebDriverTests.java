@@ -1,4 +1,4 @@
-package test.cps3230;
+package test.cps3230.tests;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -8,56 +8,59 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import pageObjects.WebsitePageObject;
+import test.cps3230.spies.WebsiteElementsServiceSpy;
 
 import java.util.List;
 
 public class WebDriverTests {
     WebDriver driver;
     WebsitePageObject websitePageObject;
+    WebsiteElementsServiceSpy websiteElementsService;
 
     @BeforeEach
     public void setup() {
-        System.setProperty("webdriver.chrome.driver", "C:/Users/memos/webtesting/chromedriver/chromedriver.exe");
-        driver = new ChromeDriver();
-        driver.get("https://www.bookdepository.com/");
+        websitePageObject = new WebsitePageObject();
+        websiteElementsService = new WebsiteElementsServiceSpy();
 
-        websitePageObject = new WebsitePageObject(driver);
+        websitePageObject.setWebsiteElementsService(websiteElementsService);
+
+        websiteElementsService.setUpDriver();
     }
 
     @AfterEach
     public void teardown() {
-        driver.quit();
+        websiteElementsService.quitDriver();
     }
 
     @Test
     public void testScrapingTitleWebElementsFromSearchWithFiveResultsOrMore() {
-        websitePageObject.searchForProduct("Harry Potter");
+        websiteElementsService.searchForProduct("Harry Potter");
 
-        List<WebElement> titlesElementList = websitePageObject.getTitles();
+        List<WebElement> titlesElementList = websiteElementsService.getTitlesElements();
         Assertions.assertTrue(titlesElementList.size() >= 5);
     }
 
     @Test
     public void testScrapingDescriptionWebElementsFromSearchWithFiveResultsOrMore() {
-        websitePageObject.searchForProduct("Harry Potter");
+        websiteElementsService.searchForProduct("Harry Potter");
 
-        List<WebElement> descriptionsElementList = websitePageObject.getDescriptions();
+        List<WebElement> descriptionsElementList = websiteElementsService.getDescriptionsElements();
         Assertions.assertTrue(descriptionsElementList.size() >= 5);
     }
 
     @Test
     public void testScrapingUrlsWebElementsFromSearchWithFiveResultsOrMore() {
-        websitePageObject.searchForProduct("Harry Potter");
+        websiteElementsService.searchForProduct("Harry Potter");
 
-        List<WebElement> urlsElementList = websitePageObject.getUrls();
+        List<WebElement> urlsElementList = websiteElementsService.getUrlsElements();
         Assertions.assertTrue(urlsElementList.size() >= 5);
     }
 
     @Test
     public void testScrapingImageUrlsWebElementsFromSearchWithFiveResultsOrMore() {
-        websitePageObject.searchForProduct("Harry Potter");
+        websiteElementsService.searchForProduct("Harry Potter");
 
-        List<WebElement> imageUrlsElementList = websitePageObject.getImageUrls();
+        List<WebElement> imageUrlsElementList = websiteElementsService.getImageUrlsElements();
 
         // Technically it should be >= 5 but since there are another 2 extra imageUrls
         // used in other areas of the website then +2 is added since these extra imageUrls
@@ -67,41 +70,41 @@ public class WebDriverTests {
 
     @Test
     public void testScrapingPricesWebElementsFromSearchWithFiveResultsOrMore() {
-        websitePageObject.searchForProduct("Harry Potter");
+        websiteElementsService.searchForProduct("Harry Potter");
 
-        List<WebElement> pricesElementList = websitePageObject.getPrices();
+        List<WebElement> pricesElementList = websiteElementsService.getPricesElements();
         Assertions.assertTrue(pricesElementList.size() >= 5);
     }
 
     @Test
     public void testScrapingTitleWebElementsFromSearchWithLessThanFiveResults() {
-        websitePageObject.searchForProduct("Angel David Revilla");
+        websiteElementsService.searchForProduct("Angel David Revilla");
 
-        List<WebElement> titlesElementList = websitePageObject.getTitles();
+        List<WebElement> titlesElementList = websiteElementsService.getTitlesElements();
         Assertions.assertEquals(4,titlesElementList.size());
     }
 
     @Test
     public void testScrapingDescriptionWebElementsFromSearchWithLessThanFiveResults() {
-        websitePageObject.searchForProduct("Angel David Revilla");
+        websiteElementsService.searchForProduct("Angel David Revilla");
 
-        List<WebElement> descriptionsElementList = websitePageObject.getDescriptions();
+        List<WebElement> descriptionsElementList = websiteElementsService.getDescriptionsElements();
         Assertions.assertEquals(4, descriptionsElementList.size());
     }
 
     @Test
     public void testScrapingUrlsWebElementsFromSearchWithLessThanFiveResults() {
-        websitePageObject.searchForProduct("Angel David Revilla");
+        websiteElementsService.searchForProduct("Angel David Revilla");
 
-        List<WebElement> urlsElementList = websitePageObject.getUrls();
+        List<WebElement> urlsElementList = websiteElementsService.getUrlsElements();
         Assertions.assertEquals(4, urlsElementList.size());
     }
 
     @Test
     public void testScrapingImageUrlsWebElementsFromSearchWithLessThanFiveResults() {
-        websitePageObject.searchForProduct("Angel David Revilla");
+        websiteElementsService.searchForProduct("Angel David Revilla");
 
-        List<WebElement> imageUrlsElementList = websitePageObject.getImageUrls();
+        List<WebElement> imageUrlsElementList = websiteElementsService.getImageUrlsElements();
 
         // Technically what is expected should be 4 but since there are another 2 extra imageUrls
         // used in other areas of the website then +2 is added since these extra imageUrls
@@ -111,41 +114,41 @@ public class WebDriverTests {
 
     @Test
     public void testScrapingPricesWebElementsFromSearchWithLessThanFiveResults() {
-        websitePageObject.searchForProduct("Angel David Revilla");
+        websiteElementsService.searchForProduct("Angel David Revilla");
 
-        List<WebElement> pricesElementList = websitePageObject.getPrices();
+        List<WebElement> pricesElementList = websiteElementsService.getPricesElements();
         Assertions.assertEquals(2, pricesElementList.size());
     }
 
     @Test
     public void testScrapingTitleWebElementsFromSearchWithNoResults() {
-        websitePageObject.searchForProduct("");
+        websiteElementsService.searchForProduct("");
 
-        List<WebElement> titlesElementList = websitePageObject.getTitles();
+        List<WebElement> titlesElementList = websiteElementsService.getTitlesElements();
         Assertions.assertEquals(0,titlesElementList.size());
     }
 
     @Test
     public void testScrapingDescriptionWebElementsFromSearchWithNoResults() {
-        websitePageObject.searchForProduct("");
+        websiteElementsService.searchForProduct("");
 
-        List<WebElement> descriptionsElementList = websitePageObject.getDescriptions();
+        List<WebElement> descriptionsElementList = websiteElementsService.getDescriptionsElements();
         Assertions.assertEquals(0, descriptionsElementList.size());
     }
 
     @Test
     public void testScrapingUrlsWebElementsFromSearchWithNoResults() {
-        websitePageObject.searchForProduct("");
+        websiteElementsService.searchForProduct("");
 
-        List<WebElement> urlsElementList = websitePageObject.getUrls();
+        List<WebElement> urlsElementList = websiteElementsService.getUrlsElements();
         Assertions.assertEquals(0, urlsElementList.size());
     }
 
     @Test
     public void testScrapingImageUrlsWebElementsFromSearchWithNoResults() {
-        websitePageObject.searchForProduct("");
+        websiteElementsService.searchForProduct("");
 
-        List<WebElement> imageUrlsElementList = websitePageObject.getImageUrls();
+        List<WebElement> imageUrlsElementList = websiteElementsService.getImageUrlsElements();
 
         // Technically what is expected should be 2 but since there are another 2 extra imageUrls
         // used in other areas of the website then +2 is added since these extra imageUrls
@@ -155,9 +158,9 @@ public class WebDriverTests {
 
     @Test
     public void testScrapingPricesWebElementsFromSearchWithNoResults() {
-        websitePageObject.searchForProduct("");
+        websiteElementsService.searchForProduct("");
 
-        List<WebElement> pricesElementList = websitePageObject.getPrices();
+        List<WebElement> pricesElementList = websiteElementsService.getPricesElements();
         Assertions.assertEquals(0, pricesElementList.size());
     }
 }
