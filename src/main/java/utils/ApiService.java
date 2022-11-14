@@ -12,7 +12,7 @@ public class ApiService {
 
     protected HttpResponse <String> response;
 
-    public void sendPostRequests(int alertType, String title, String description, String url, String imageUrl,
+    public boolean sendPostRequests(int alertType, String title, String description, String url, String imageUrl,
                                  int price) throws Exception {
         AlertRequest alertRequest = new AlertRequest();
 
@@ -38,11 +38,15 @@ public class ApiService {
 
         response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
+        if (response == null)
+            return false;
+
         System.out.println(response.body());
+
+        return true;
     }
 
-    public void sendDeleteRequests() throws Exception {
-
+    public boolean sendDeleteRequests() throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI("https://api.marketalertum.com/Alert?userId=e7ee93d2-cf55-45da-a41e-6581361e3f20"))
                 .DELETE()
@@ -52,7 +56,12 @@ public class ApiService {
 
         response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
+        if (response == null)
+            return false;
+
         System.out.println(response.body());
+
+        return true;
     }
     public HttpResponse<String> getResponse() {
         return response;

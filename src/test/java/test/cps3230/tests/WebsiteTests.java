@@ -4,25 +4,34 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import pageObjects.WebsitePageObject;
+import utils.ApiService;
+import utils.WebElementsToString;
 import utils.ScrapingService;
-import utils.WebsiteElementsService;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.*;
 
 public class WebsiteTests {
     WebsitePageObject websitePageObject;
-    WebsiteElementsService websiteElementsService;
     ScrapingService scrapingService;
+    WebElementsToString webElementsToString;
+    ApiService apiService;
 
     @BeforeEach
     public void setup() {
         websitePageObject = new WebsitePageObject();
-        //websiteElementsService = new WebsiteElementsServiceSpy();
         scrapingService = new ScrapingService();
+        webElementsToString = new WebElementsToString();
+        apiService = new ApiService();
 
-        websitePageObject.setScrapingService(scrapingService);
-        websitePageObject.setWebsiteElementsService(websiteElementsService);
-
-        //websiteElementsService.setUpDriver();
+        websitePageObject.setScrapingService(webElementsToString);
+        websitePageObject.setWebsiteElementsService(scrapingService);
+        websitePageObject.setApiService(apiService);
     }
 
 //    @AfterEach
@@ -30,145 +39,162 @@ public class WebsiteTests {
 //        websiteElementsService.quitDriver();
 //    }
 
-//    @Test
-//    public void testSearchFunctionalityForAString(){
-//        WebsiteElementsProvider websiteElementsProvider = Mockito.mock(WebsiteElementsProvider.class);
-//        Mockito.when(websiteElementsProvider.getResult("batman")).thenReturn(websiteElementsProvider.result1);
-//
-//        Assertions.assertEquals("Search results for batman", websiteElementsProvider.getResult("batman"));
-//    }
-//    @Test
-//    public void testSearchFunctionalityForAString() {
-//        websiteElementsService.searchForProduct("batman");
-//
-//        String resultString = websiteElementsService.getDriver().
-//                findElement(By.xpath("//div[@class = 'main-content search-page']/h1")).getText();
-//
-//        Assertions.assertEquals("Search results for batman", resultString);
-//    }
+    @Test
+    public void testCheckTheCurrentWebsiteUrl() {
+        WebDriver driver = Mockito.mock(WebDriver.class);
+        Mockito.when(driver.getCurrentUrl()).thenReturn("https://www.bookdepository.com/");
 
-//    @Test
-//    public void testSearchFunctionalityForAnEmptyString() {
-//        WebsiteElementsProvider websiteElementsProvider = Mockito.mock(WebsiteElementsProvider.class);
-//        Mockito.when(websiteElementsProvider.getResult("")).thenReturn(websiteElementsProvider.result2);
-//
-//        Assertions.assertEquals("Advanced Search", websiteElementsProvider.getResult(""));
-//    }
+        Assertions.assertEquals("https://www.bookdepository.com/", driver.getCurrentUrl());
+    }
 
-//    @Test
-//    public void testSearchFunctionalityForAnEmptyString() {
-//        websiteElementsService.searchForProduct("");
-//        String resultString = websiteElementsService.getDriver().
-//                findElement(By.xpath("//div[@class = 'content']/h1")).getText();
-//
-//        Assertions.assertEquals("Advanced Search", resultString);
-//    }
+    @Test
+    public void testCheckTheCurrentWebsiteTitle() {
+        WebDriver driver = Mockito.mock(WebDriver.class);
+        Mockito.when(driver.getTitle())
+                .thenReturn(
+                        "Book Depository is the world's most international online bookstore offering over 20 million " +
+                                "books with free delivery worldwide.");
 
-//      @Test
-//      public void testScrapeTitlesOfWebsiteSearchWithFiveResultsOrMore() {
-//          WebsiteElementsProvider websiteElementsProvider = Mockito.mock(WebsiteElementsProvider.class);
-//          Mockito.when(websiteElementsProvider.getTitles("batman")).
-//                  thenReturn(websiteElementsProvider.titles);
-//
-//          String[] result = {"batman 1", "batman 2", "batman 3", "batman 4", "batman 5"};
-//          Assertions.assertArrayEquals(result, websiteElementsProvider.getTitles("batman"));
-//      }
-//    @Test
-//    public void testTitlesOfWebsiteSearchWithFiveResultsOrMore() throws Exception {
-//        websitePageObject.productScrape("batman");
-//        Assertions.assertTrue(scrapingService.getTitles().size() >= 5);
-//    }
+        Assertions.assertEquals("Book Depository is the world's most international online bookstore offering " +
+                "over 20 million books with free delivery worldwide.", driver.getTitle());
+    }
 
-//      @Test
-//      public void testScrapeDescriptionsOfWebsiteSearchWithFiveResultsOrMore(){
-//          WebsiteElementsProvider websiteElementsProvider = Mockito.mock(WebsiteElementsProvider.class);
-//          Mockito.when(websiteElementsProvider.getDescriptions("batman")).
-//                  thenReturn(websiteElementsProvider.titles);
-//
-//          String[] result = {"description1", "description2", "description3", "description4", "description5"};
-//          Assertions.assertArrayEquals(result, websiteElementsProvider.getDescriptions("batman"));
-//      }
-//    @Test
-//    public void testDescriptionsOfWebsiteSearchWithFiveResultsOrMore() throws Exception {
-//        websitePageObject.productScrape("batman");
-//        Assertions.assertTrue(scrapingService.getDescriptions().size() >= 5);
-//    }
-//
-//    @Test
-//    public void testUrlsOfWebsiteSearchWithFiveResultsOrMore() throws Exception {
-//        websitePageObject.productScrape("batman");
-//        Assertions.assertTrue(scrapingService.getUrls().size() > 0);
-//    }
-//
-//    @Test
-//    public void testImageUrlsOfWebsiteSearchWithFiveResultsOrMore() throws Exception {
-//        websitePageObject.productScrape("batman");
-//        Assertions.assertTrue(scrapingService.getImageUrls().size() > 0);
-//    }
-//
-//    @Test
-//    public void testPricesOfWebsiteSearchWithFiveResultsOrMore() throws Exception {
-//        websitePageObject.productScrape("batman");
-//        Assertions.assertTrue(scrapingService.getPrices().size() > 0);
-//    }
-//
-//    @Test
-//    public void testTitlesOfEmptyWebsiteSearch() throws Exception {
-//        websitePageObject.productScrape("");
-//        Assertions.assertEquals(0, scrapingService.getTitles().size());
-//    }
-//
-//    @Test
-//    public void testDescriptionsOfEmptyWebsiteSearch() throws Exception {
-//        websitePageObject.productScrape("");
-//        Assertions.assertEquals(0, scrapingService.getDescriptions().size());
-//    }
-//
-//    @Test
-//    public void testUrlsOfEmptyWebsiteSearch() throws Exception {
-//        websitePageObject.productScrape("");
-//        Assertions.assertEquals(0, scrapingService.getUrls().size());
-//    }
-//
-//    @Test
-//    public void testImageUrlsOfEmptyWebsiteSearch() throws Exception {
-//        websitePageObject.productScrape("");
-//        Assertions.assertEquals(0, scrapingService.getImageUrls().size());
-//    }
-//
-//    @Test
-//    public void testPricesOfEmptyWebsiteSearch() throws Exception {
-//        websitePageObject.productScrape("");
-//        Assertions.assertEquals(0, scrapingService.getPrices().size());
-//    }
-//
-//    @Test
-//    public void testTitlesOfWebsiteSearchWithLessThanFiveResults() throws Exception {
-//        websitePageObject.productScrape("Angel David Revilla");
-//        Assertions.assertEquals(4, scrapingService.getTitles().size());
-//    }
-//
-//    @Test
-//    public void testDescriptionsOfWebsiteSearchWithLessThanFiveResults() throws Exception {
-//        websitePageObject.productScrape("Angel David Revilla");
-//        Assertions.assertEquals(4,scrapingService.getDescriptions().size());
-//    }
-//
-//    @Test
-//    public void testUrlsOfWebsiteSearchWithLessThanFiveResults() throws Exception {
-//        websitePageObject.productScrape("Angel David Revilla");
-//        Assertions.assertEquals(4, scrapingService.getUrls().size());
-//    }
-//
-//    @Test
-//    public void testImageUrlsOfWebsiteSearchWithLessThanFiveResults() throws Exception {
-//        websitePageObject.productScrape("Angel David Revilla");
-//        Assertions.assertEquals(4, scrapingService.getImageUrls().size());
-//    }
-//
-//    @Test
-//    public void testPricesOfWebsiteSearchWithLessThanFiveResults() throws Exception {
-//        websitePageObject.productScrape("Angel David Revilla");
-//        Assertions.assertEquals(2, scrapingService.getPrices().size());
-//    }
+
+    @Test
+    public void testBookSearch() throws Exception {
+        WebsitePageObject mock = Mockito.mock(WebsitePageObject.class);
+
+        Mockito.when(mock.productScrape(anyString(), anyInt())).thenReturn(true);
+
+        boolean isScrapeSuccessful = mock.productScrape("batman", 5);
+
+        Assertions.assertTrue(isScrapeSuccessful);
+    }
+
+    @Test
+    public void testSimpleWebSearch(){
+        ScrapingService mock = Mockito.mock(ScrapingService.class);
+
+        Mockito.when(mock.searchForProduct(anyString())).thenReturn(true);
+
+        boolean isSearchSuccessful = mock.searchForProduct("harry potter");
+
+        Assertions.assertTrue(isSearchSuccessful);
+    }
+
+    @Test
+    public void testScrapingTitlesString(){
+        WebElementsToString mock = Mockito.mock(WebElementsToString.class);
+
+        List<WebElement> list = new ArrayList<>();
+        Mockito.when(mock.scrapeTitles(eq(list), anyInt())).thenReturn(true);
+
+        boolean isSuccessful = mock.scrapeTitles(list, 2);
+
+        Assertions.assertTrue(isSuccessful);
+    }
+
+    @Test
+    public void testScrapingDescriptionsString(){
+        WebElementsToString mock = Mockito.mock(WebElementsToString.class);
+
+        List<WebElement> list = new ArrayList<>();
+        Mockito.when(mock.scrapeDescriptions(eq(list), anyInt())).thenReturn(true);
+
+        boolean isSuccessful = mock.scrapeDescriptions(list, 2);
+
+        Assertions.assertTrue(isSuccessful);
+    }
+    @Test
+    public void testScrapingUrlsString(){
+        WebElementsToString mock = Mockito.mock(WebElementsToString.class);
+
+        List<WebElement> list = new ArrayList<>();
+        Mockito.when(mock.scrapeUrls(eq(list), anyInt())).thenReturn(true);
+
+        boolean isSuccessful = mock.scrapeUrls(list, 2);
+
+        Assertions.assertTrue(isSuccessful);
+    }
+    @Test
+    public void testScrapingImageUrlsString(){
+        WebElementsToString mock = Mockito.mock(WebElementsToString.class);
+
+        List<WebElement> list = new ArrayList<>();
+        Mockito.when(mock.scrapeImageUrls(eq(list), anyInt())).thenReturn(true);
+
+        boolean isSuccessful = mock.scrapeImageUrls(list, 2);
+
+        Assertions.assertTrue(isSuccessful);
+    }
+
+    @Test
+    public void testScrapingPricesInts(){
+        WebElementsToString mock = Mockito.mock(WebElementsToString.class);
+
+        List<WebElement> list = new ArrayList<>();
+        Mockito.when(mock.scrapePrices(eq(list), anyInt())).thenReturn(true);
+
+        boolean isSuccessful = mock.scrapePrices(list, 2);
+
+        Assertions.assertTrue(isSuccessful);
+    }
+
+    @Test
+    public void testScrapingTitlesStringWhenListIsNull(){
+        WebElementsToString mock = Mockito.mock(WebElementsToString.class);
+
+        List<WebElement> list = new ArrayList<>();
+        Mockito.when(mock.scrapeTitles(eq(null), anyInt())).thenReturn(false);
+
+        boolean isSuccessful = mock.scrapeTitles(list, 2);
+
+        Assertions.assertFalse(isSuccessful);
+    }
+
+    @Test
+    public void testScrapingDescriptionsStringWhenListIsNull(){
+        WebElementsToString mock = Mockito.mock(WebElementsToString.class);
+
+        List<WebElement> list = new ArrayList<>();
+        Mockito.when(mock.scrapeDescriptions(eq(null), anyInt())).thenReturn(false);
+
+        boolean isSuccessful = mock.scrapeDescriptions(list, 2);
+
+        Assertions.assertFalse(isSuccessful);
+    }
+    @Test
+    public void testScrapingUrlsStringWhenListIsNull(){
+        WebElementsToString mock = Mockito.mock(WebElementsToString.class);
+
+        List<WebElement> list = new ArrayList<>();
+        Mockito.when(mock.scrapeUrls(eq(null), anyInt())).thenReturn(false);
+
+        boolean isSuccessful = mock.scrapeUrls(list, 2);
+
+        Assertions.assertFalse(isSuccessful);
+    }
+    @Test
+    public void testScrapingImageUrlsStringWhenListIsNull(){
+        WebElementsToString mock = Mockito.mock(WebElementsToString.class);
+
+        List<WebElement> list = new ArrayList<>();
+        Mockito.when(mock.scrapeImageUrls(eq(null), anyInt())).thenReturn(false);
+
+        boolean isSuccessful = mock.scrapeImageUrls(list, 2);
+
+        Assertions.assertFalse(isSuccessful);
+    }
+
+    @Test
+    public void testScrapingPricesIntsWhenListIsNull(){
+        WebElementsToString mock = Mockito.mock(WebElementsToString.class);
+
+        List<WebElement> list = new ArrayList<>();
+        Mockito.when(mock.scrapePrices(eq(null), anyInt())).thenReturn(false);
+
+        boolean isSuccessful = mock.scrapePrices(list, 2);
+
+        Assertions.assertFalse(isSuccessful);
+    }
 }

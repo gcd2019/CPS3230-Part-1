@@ -2,79 +2,98 @@ package pageObjects;
 
 import org.openqa.selenium.WebElement;
 import utils.ApiService;
+import utils.WebElementsToString;
 import utils.ScrapingService;
-import utils.WebsiteElementsService;
 
 import java.util.List;
 
 public class WebsitePageObject {
 
     protected ApiService apiService;
+    protected WebElementsToString webElementsToString;
     protected ScrapingService scrapingService;
-    protected WebsiteElementsService websiteElementsService;
 
-    public void setScrapingService(ScrapingService scrapingService) {
-        this.scrapingService = scrapingService;
+    public void setScrapingService(WebElementsToString webElementsToString) {
+        this.webElementsToString = webElementsToString;
     }
 
     public void setApiService(ApiService apiService) {
         this.apiService = apiService;
     }
 
-    public void setWebsiteElementsService(WebsiteElementsService websiteElementsService) {
-        this.websiteElementsService = websiteElementsService;
+    public void setWebsiteElementsService(ScrapingService scrapingService) {
+        this.scrapingService = scrapingService;
     }
 
-    public void productScrape(String product, int n) throws Exception {
-        if (websiteElementsService != null)
-            websiteElementsService.searchForProduct(product);
+    public Boolean productScrape(String product, int n) throws Exception {
+        if (scrapingService == null)
+            return false;
 
-        // Scrapping titles
-        assert websiteElementsService != null;
-        List<WebElement> titlesElementList = websiteElementsService.getTitlesElements();
-        if (titlesElementList.size() > 0){
-            if (scrapingService != null)
-                scrapingService.scrapeTitles(titlesElementList, n);
-        }
+        scrapingService.setUpDriver("https://www.bookdepository.com/");
+        if (scrapingService.searchForProduct(product)){
 
-        // Scrapping authors
-        List<WebElement> descriptionsElementList = websiteElementsService.getDescriptionsElements();
-        if (descriptionsElementList.size() > 0){
-            if (scrapingService != null)
-                scrapingService.scrapeDescriptions(descriptionsElementList, n);
-        }
+            // Scrapping titles
+            List<WebElement> titlesElementList = scrapingService.getTitlesElements();
+            if (webElementsToString == null)
+                return false;
 
-        // Scrapping urls
-        List<WebElement> urlsElementList = websiteElementsService.getUrlsElements();
-        if (urlsElementList.size() > 0){
-            if (scrapingService != null)
-                scrapingService.scrapeUrls(urlsElementList, n);
-        }
+            if (titlesElementList.size() > 0){
+                webElementsToString.scrapeTitles(titlesElementList, n);
+            }
 
-        // Scrapping image urls
-        // This is checking if the number of image urls in the website is bigger than 2
-        // since when no results are found there are already another 2 image urls used in other parts of the website.
-        List<WebElement> imageUrlsElementList = websiteElementsService.getImageUrlsElements();
-        if (imageUrlsElementList.size() > 2){
-            if (scrapingService != null)
-                scrapingService.scrapeImageUrls(imageUrlsElementList, n);
-        }
+            // Scrapping authors
+            List<WebElement> descriptionsElementList = scrapingService.getDescriptionsElements();
+            if (webElementsToString == null)
+                return false;
 
-        // Scrapping prices
-        List<WebElement> pricesElementList = websiteElementsService.getPricesElements();
-        if (pricesElementList.size() > 0){
-            if (scrapingService != null)
-                scrapingService.scrapePrices(pricesElementList, n);
-        }
+            if (descriptionsElementList.size() > 0){
+                webElementsToString.scrapeDescriptions(descriptionsElementList, n);
+            }
 
-        // We need to send post requests
-        // Alerts are only sent if the results scraped from the website are equal or bigger than 5
-        assert scrapingService != null;
-        for (int i = 0; i < n; i++){
-            if (apiService != null)
-                apiService.sendPostRequests(6, scrapingService.getTitles().get(i),
-                        scrapingService.getDescriptions().get(i), scrapingService.getUrls().get(i),
-                        scrapingService.getImageUrls().get(i), scrapingService.getPrices().get(i));
+            // Scrapping urls
+            List<WebElement> urlsElementList = scrapingService.getUrlsElements();
+            if (webElementsToString == null)
+                return false;
+
+            if (urlsElementList.size() > 0){
+                webElementsToString.scrapeUrls(urlsElementList, n);
+            }
+
+            // Scrapping image urls
+            List<WebElement> imageUrlsElementList = scrapingService.getImageUrlsElements();
+            if (webElementsToString == null)
+                return false;
+
+            // This is checking if the number of image urls in the website is bigger than 2
+            // since when no results are found there are already another 2 image urls used in other parts of the website.
+            if (imageUrlsElementList.size() > 2){
+                webElementsToString.scrapeImageUrls(imageUrlsElementList, n);
+            }
+
+            // Scrapping prices
+            List<WebElement> pricesElementList = scrapingService.getPricesElements();
+            if (webElementsToString == null)
+                return false;
+
+            if (pricesElementList.size() > 0){
+                webElementsToString.scrapePrices(pricesElementList, n);
+            }
+
+            if (apiService == null)
+                return false;
+
+            // We need to send post requests
+            for (int i = 0; i < n; i++){
+                apiService.sendPostRequests(5, webElementsToString.getTitles().get(i),
+                        webElementsToString.getDescriptions().get(i), webElementsToString.getUrls().get(i),
+                        webElementsToString.getImageUrls().get(i), webElementsToString.getPrices().get(i));
+            }
+            scrapingService.quitDriver();
+
+            return true;
+
+        }else{
+            return false;
         }
     }
 }

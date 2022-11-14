@@ -1,68 +1,61 @@
 package utils;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ScrapingService {
-    protected List<String> titles = new ArrayList<>();
-    protected List<String> descriptions = new ArrayList<>();
-    protected List<String> urls = new ArrayList<>();
-    protected List<String> imageUrls = new ArrayList<>();
-    protected List<Integer> prices = new ArrayList<>();
+    protected WebDriver driver;
 
-    public void scrapeTitles(List<WebElement> titlesList, int n) {
-        for (int i = 0; i < n; i++) {
-            titles.add(i, titlesList.get(i).getText());
-        }
+    public void setUpDriver(String url){
+        System.setProperty("webdriver.chrome.driver", "C:/Users/memos/webtesting/chromedriver/chromedriver.exe");
+        driver = new ChromeDriver();
+        driver.get(url);
     }
 
-    public void scrapeDescriptions(List<WebElement> descriptionsList, int n) {
-        for (int i = 0; i < n; i++) {
-            descriptions.add(i, descriptionsList.get(i).getText());
-        }
+    public void quitDriver(){
+        driver.quit();
     }
 
-    public void scrapeUrls(List<WebElement> urlsList, int n) {
-        for (int i = 0; i < n; i++) {
-            urls.add(i, urlsList.get(i).getAttribute("href"));
-        }
+    public WebDriver getDriver() {
+        return driver;
     }
 
-    public void scrapeImageUrls(List<WebElement> imageUrlsList, int n) {
-        for (int i = 0; i < n - 2; i++) {
-            imageUrls.add(i, imageUrlsList.get(i).getAttribute("src"));
-        }
+    public boolean searchForProduct(String product) {
+        WebElement searchField = driver.findElement(By.name("searchTerm"));
+        searchField.sendKeys(product);
+        WebElement searchButton = driver.findElement(By.className("header-search-btn"));
+        searchButton.submit();
+
+        String resultString = getDriver().
+                findElement(By.xpath("//div[@class = 'main-content search-page']/h1")).getText();
+
+        // We check that after making the search, we are redirected to the actual results page.
+        String expectedString = "Search results for " + product;
+
+        return resultString.equals(expectedString);
     }
 
-    public void scrapePrices(List<WebElement> pricesList, int n) {
-        for (int i = 0; i < n; i++) {
-            String newString = pricesList.get(i).getText().replace("€","");
-            String newString2 = newString.replace(",", ".");
-            double d = Double.parseDouble(newString2)*100;
-            prices.add(i, (int) d);
-        }
+    public List<WebElement> getTitlesElements(){
+        return driver.findElements(By.className("title"));
     }
 
-    public List<String> getTitles(){
-        return titles;
+    public List<WebElement> getDescriptionsElements(){
+        return driver.findElements(By.xpath("//p[@class = 'author']/span/a/span"));
     }
 
-    public List<String> getDescriptions(){
-        return descriptions;
+    public List<WebElement> getUrlsElements(){
+        return driver.findElements(By.xpath("//h3[@class = 'title']/a"));
     }
 
-    public List<String> getUrls(){
-        return urls;
+    public List<WebElement> getImageUrlsElements(){
+        return driver.findElements(By.xpath("//img[@class = 'lazy loaded']"));
     }
 
-    public List<String> getImageUrls(){
-        return imageUrls;
+    public List<WebElement> getPricesElements(){
+        return driver.findElements(By.className("sale-price"));
     }
-
-    public List<Integer> getPrices(){
-        return prices;
-    }
-
 }

@@ -9,16 +9,16 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import pageObjects.WebsitePageObject;
 import utils.ApiService;
+import utils.WebElementsToString;
 import utils.ScrapingService;
-import utils.WebsiteElementsService;
 
 import java.util.List;
 
 public class WebScraperCucumberTests {
 
     WebsitePageObject websitePageObject;
-    WebsiteElementsService websiteElementsService;
     ScrapingService scrapingService;
+    WebElementsToString webElementsToString;
     ApiService apiService;
 
     String userKey;
@@ -26,46 +26,46 @@ public class WebScraperCucumberTests {
     @Given("I am a user of marketalertum")
     public void iAmAUserOfMarketalertum() {
         websitePageObject = new WebsitePageObject();
-        websiteElementsService = new WebsiteElementsService();
-        websitePageObject.setWebsiteElementsService(websiteElementsService);
+        scrapingService = new ScrapingService();
+        websitePageObject.setWebsiteElementsService(scrapingService);
 
         userKey = "e7ee93d2-cf55-45da-a41e-6581361e3f20";
-        websiteElementsService.setUpDriver("https://www.marketalertum.com/Alerts/Login");
+        scrapingService.setUpDriver("https://www.marketalertum.com/Alerts/Login");
     }
 
     @When("I login using valid credentials")
     public void iLoginUsingValidCredentials() {
-        WebElement searchField = websiteElementsService.getDriver().findElement(By.name("UserId"));
+        WebElement searchField = scrapingService.getDriver().findElement(By.name("UserId"));
         searchField.sendKeys(userKey);
-        WebElement searchButton = websiteElementsService.getDriver()
+        WebElement searchButton = scrapingService.getDriver()
                 .findElement(By.xpath("//form[@action ='/Alerts/LoginForm']/input"));
         searchButton.submit();
     }
 
     @Then("I should see my alerts")
     public void iShouldSeeMyAlerts() {
-        String myAlerts = websiteElementsService.getDriver()
+        String myAlerts = scrapingService.getDriver()
                 .findElement(By.xpath("//main[@class ='pb-3']/h1"))
                 .getText();
-        websiteElementsService.quitDriver();
+        scrapingService.quitDriver();
         Assertions.assertEquals("Latest alerts for Guillermo Alejandro Castro Diaz", myAlerts);
     }
 
     @When("I login using invalid credentials")
     public void iLoginUsingInvalidCredentials() {
-        WebElement searchField = websiteElementsService.getDriver().findElement(By.name("UserId"));
+        WebElement searchField = scrapingService.getDriver().findElement(By.name("UserId"));
         searchField.sendKeys("ajalsjakslajljas");
-        WebElement searchButton = websiteElementsService.getDriver()
+        WebElement searchButton = scrapingService.getDriver()
                 .findElement(By.xpath("//form[@action ='/Alerts/LoginForm']/input"));
         searchButton.submit();
     }
 
     @Then("I should see the login screen again")
     public void iShouldSeeTheLoginScreenAgain() {
-        String userId = websiteElementsService.getDriver()
+        String userId = scrapingService.getDriver()
                 .findElement(By.xpath("//form[@action ='/Alerts/LoginForm']/b"))
                 .getText();
-        websiteElementsService.quitDriver();
+        scrapingService.quitDriver();
         Assertions.assertEquals("User ID:", userId);
     }
 
@@ -73,29 +73,31 @@ public class WebScraperCucumberTests {
     public void iAmAnAdministratorOfTheWebsiteAndIUploadAlerts(int arg0) throws Exception {
         websitePageObject = new WebsitePageObject();
         apiService = new ApiService();
+        scrapingService = new ScrapingService();
+        webElementsToString = new WebElementsToString();
+
         websitePageObject.setApiService(apiService);
+        websitePageObject.setWebsiteElementsService(scrapingService);
+        websitePageObject.setScrapingService(webElementsToString);
 
         // Clear any previous alerts
         apiService.sendDeleteRequests();
 
-        for (int i = 0; i < arg0; i++)
-            apiService.sendPostRequests(5, "Batman", "Jeph Loeb",
-                    "https://www.bookdepository.com/Batman-Long-Halloween-Jeph-Loeb/9781401232597?ref=grid-view&qid=1668366982667&sr=1-2",
-                    "https://d1w7fb2mkkr3kw.cloudfront.net/assets/images/book/mid/9781/4012/9781401232597.jpg",
-                    1500);
+        boolean isSuccessful = websitePageObject.productScrape("batman", arg0);
+        Assertions.assertTrue(isSuccessful);
     }
 
     @When("I view a list of alerts")
     public void iViewAListOfAlerts() {
         //Login
-        WebElement searchField = websiteElementsService.getDriver().findElement(By.name("UserId"));
+        WebElement searchField = scrapingService.getDriver().findElement(By.name("UserId"));
         searchField.sendKeys(userKey);
-        WebElement searchButton = websiteElementsService.getDriver()
+        WebElement searchButton = scrapingService.getDriver()
                 .findElement(By.xpath("//form[@action ='/Alerts/LoginForm']/input"));
         searchButton.submit();
 
         //See my alerts
-        WebElement alertsList = websiteElementsService.getDriver().findElement(By.className("pb-3"));
+        WebElement alertsList = scrapingService.getDriver().findElement(By.className("pb-3"));
         String alertListRoleName = alertsList.getAttribute("role");
 
         Assertions.assertEquals("main", alertListRoleName);
@@ -103,7 +105,7 @@ public class WebScraperCucumberTests {
 
     @Then("each alert should contain an icon")
     public void eachAlertShouldContainAnIcon() {
-        List<WebElement> icons = websiteElementsService.getDriver()
+        List<WebElement> icons = scrapingService.getDriver()
                 .findElements(By.xpath("//table[@border = 1]/tbody/tr/td/h4/img"));
 
         Assertions.assertEquals(3, icons.size());
@@ -111,35 +113,55 @@ public class WebScraperCucumberTests {
 
     @And("each alert should contain a heading")
     public void eachAlertShouldContainAHeading() {
-        scrapingService = new ScrapingService();
-        websitePageObject.setScrapingService(scrapingService);
+        webElementsToString = new WebElementsToString();
+        websitePageObject.setScrapingService(webElementsToString);
 
-        List<WebElement> headingElements = websiteElementsService.getDriver()
+        List<WebElement> headingElements = scrapingService.getDriver()
                 .findElements(By.xpath("//table[@border = 1]/tbody/tr/td/h4/img"));
 
-        scrapingService.scrapeTitles(headingElements, headingElements.size());
+        webElementsToString.scrapeTitles(headingElements, headingElements.size());
 
-        Assertions.assertEquals(3, scrapingService.getTitles().size());
+        Assertions.assertEquals(3, webElementsToString.getTitles().size());
     }
 
     @And("each alert should contain a description")
     public void eachAlertShouldContainADescription() {
-        //
+        List<WebElement> descriptionElements = scrapingService.getDriver()
+                .findElements(By.xpath("//tbody[@border = 1]/tr[2]/td"));
+
+        webElementsToString.scrapeDescriptions(descriptionElements, descriptionElements.size());
+
+        Assertions.assertEquals(3, webElementsToString.getDescriptions().size());
     }
 
     @And("each alert should contain an image")
     public void eachAlertShouldContainAnImage() {
-        //
+        List<WebElement> imageElements = scrapingService.getDriver()
+                .findElements(By.xpath("//td[@rowspan = 4]/img"));
+
+        webElementsToString.scrapeImageUrls(imageElements, imageElements.size());
+
+        Assertions.assertEquals(3, webElementsToString.getImageUrls().size());
     }
 
     @And("each alert should contain a price")
     public void eachAlertShouldContainAPrice() {
-        //
+        List<WebElement> priceElements = scrapingService.getDriver()
+                .findElements(By.xpath("//tbody[@border = 1]/tr[4]/td"));
+
+        Assertions.assertEquals(3, priceElements.size());
     }
 
     @And("each alert should contain a link to the original product website")
     public void eachAlertShouldContainALinkToTheOriginalProductWebsite() {
-        //
+        List<WebElement> urlElements = scrapingService.getDriver()
+                .findElements(By.xpath("//tbody[@border = 1]/tr/td/a"));
+
+        webElementsToString.scrapeUrls(urlElements, urlElements.size());
+
+        scrapingService.quitDriver();
+
+        Assertions.assertEquals(3, webElementsToString.getUrls().size());
     }
 
 
@@ -147,31 +169,32 @@ public class WebScraperCucumberTests {
     public void iAmAnAdministratorOfTheWebsiteAndIUploadMoreThanAlerts(int arg0) throws Exception {
         websitePageObject = new WebsitePageObject();
         apiService = new ApiService();
+        scrapingService = new ScrapingService();
+        webElementsToString = new WebElementsToString();
+
         websitePageObject.setApiService(apiService);
+        websitePageObject.setScrapingService(webElementsToString);
+        websitePageObject.setWebsiteElementsService(scrapingService);
 
         // Clear any previous alerts
         apiService.sendDeleteRequests();
 
-        for (int i = 0; i < arg0+1; i++)
-            apiService.sendPostRequests(5, "Batman", "Jeph Loeb",
-                    "https://www.bookdepository.com/Batman-Long-Halloween-Jeph-Loeb/9781401232597?ref=grid-view&qid=1668366982667&sr=1-2",
-                    "https://d1w7fb2mkkr3kw.cloudfront.net/assets/images/book/mid/9781/4012/9781401232597.jpg",
-                    1500);
+        websitePageObject.productScrape("batman", arg0+1);
     }
 
     @When("I view a list of alerts I should see {int} alerts")
     public void iViewAListOfAlertsIShouldSeeAlerts(int arg0) {
         //Login
-        WebElement searchField = websiteElementsService.getDriver().findElement(By.name("UserId"));
+        WebElement searchField = scrapingService.getDriver().findElement(By.name("UserId"));
         searchField.sendKeys(userKey);
-        WebElement searchButton = websiteElementsService.getDriver()
+        WebElement searchButton = scrapingService.getDriver()
                 .findElement(By.xpath("//form[@action ='/Alerts/LoginForm']/input"));
         searchButton.submit();
 
         //See my alerts
-        List<WebElement> alertsList = websiteElementsService.getDriver().findElements(By.xpath("//table[@border = 1]"));
+        List<WebElement> alertsList = scrapingService.getDriver().findElements(By.xpath("//table[@border = 1]"));
 
-        websiteElementsService.quitDriver();
+        scrapingService.quitDriver();
         Assertions.assertEquals(arg0, alertsList.size());
     }
 
@@ -179,6 +202,7 @@ public class WebScraperCucumberTests {
     public void iAmAnAdministratorOfTheWebsiteAndIUploadAnAlertOfTypeAlertType(int alertType) throws Exception {
         websitePageObject = new WebsitePageObject();
         apiService = new ApiService();
+
         websitePageObject.setApiService(apiService);
 
         // Clear any previous alerts
@@ -192,17 +216,17 @@ public class WebScraperCucumberTests {
 
     @Then("I should see {int} alerts")
     public void iShouldSeeAlerts(int arg0) {
-        List<WebElement> alertsList = websiteElementsService.getDriver().findElements(By.xpath("//table[@border = 1]"));
+        List<WebElement> alertsList = scrapingService.getDriver().findElements(By.xpath("//table[@border = 1]"));
 
         Assertions.assertEquals(arg0, alertsList.size());
     }
 
     @And("the icon displayed should be {string}")
     public void theIconDisplayedShouldBeIconFileName(String filename) {
-        String icon = websiteElementsService.getDriver()
+        String icon = scrapingService.getDriver()
                 .findElement(By.xpath("//table[@border = 1]/tbody/tr/td/h4/img")).getAttribute("src");
 
-        websiteElementsService.quitDriver();
+        scrapingService.quitDriver();
         Assertions.assertEquals(filename, icon);
     }
 }
