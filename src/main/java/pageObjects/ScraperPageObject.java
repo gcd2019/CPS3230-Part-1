@@ -1,4 +1,4 @@
-package utils;
+package pageObjects;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -7,8 +7,12 @@ import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.util.List;
 
-public class ScrapingService {
+public class ScraperPageObject {
     protected WebDriver driver;
+
+    public ScraperPageObject(WebDriver driver) {
+        this.driver = driver;
+    }
 
     public void setUpDriver(String url){
         System.setProperty("webdriver.chrome.driver", "C:/Users/memos/webtesting/chromedriver/chromedriver.exe");

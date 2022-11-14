@@ -6,10 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import pageObjects.WebsitePageObject;
+import pageObjects.Website;
 import utils.ApiService;
 import utils.WebElementsToString;
-import utils.ScrapingService;
+import pageObjects.ScraperPageObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,21 +17,23 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.*;
 
 public class WebsiteTests {
-    WebsitePageObject websitePageObject;
-    ScrapingService scrapingService;
+    Website website;
+    ScraperPageObject scrapingService;
     WebElementsToString webElementsToString;
     ApiService apiService;
 
+    WebDriver driver;
+
     @BeforeEach
     public void setup() {
-        websitePageObject = new WebsitePageObject();
-        scrapingService = new ScrapingService();
+        website = new Website();
+        scrapingService = new ScraperPageObject(driver);
         webElementsToString = new WebElementsToString();
         apiService = new ApiService();
 
-        websitePageObject.setScrapingService(webElementsToString);
-        websitePageObject.setWebsiteElementsService(scrapingService);
-        websitePageObject.setApiService(apiService);
+        website.setScrapingService(webElementsToString);
+        website.setWebsiteElementsService(scrapingService);
+        website.setApiService(apiService);
     }
 
     @Test
@@ -57,7 +59,7 @@ public class WebsiteTests {
 
     @Test
     public void testBookSearch() throws Exception {
-        WebsitePageObject mock = Mockito.mock(WebsitePageObject.class);
+        Website mock = Mockito.mock(Website.class);
 
         Mockito.when(mock.productScrape(anyString(), anyInt())).thenReturn(true);
 
@@ -68,7 +70,7 @@ public class WebsiteTests {
 
     @Test
     public void testSimpleWebSearch(){
-        ScrapingService mock = Mockito.mock(ScrapingService.class);
+        ScraperPageObject mock = Mockito.mock(ScraperPageObject.class);
 
         Mockito.when(mock.searchForProduct(anyString())).thenReturn(true);
 
@@ -79,7 +81,7 @@ public class WebsiteTests {
 
     @Test
     public void testFailingSimpleWebSearch(){
-        ScrapingService mock = Mockito.mock(ScrapingService.class);
+        ScraperPageObject mock = Mockito.mock(ScraperPageObject.class);
 
         Mockito.when(mock.searchForProduct(null)).thenReturn(false);
 

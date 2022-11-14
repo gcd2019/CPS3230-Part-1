@@ -3,33 +3,36 @@ package test.cps3230.tests;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import pageObjects.WebsitePageObject;
+import org.openqa.selenium.WebDriver;
+import pageObjects.Website;
 import utils.ApiService;
-import utils.ScrapingService;
+import pageObjects.ScraperPageObject;
 import utils.WebElementsToString;
 
 public class SimpleTest {
-    WebsitePageObject websitePageObject;
-    ScrapingService scrapingService;
+    Website website;
+    ScraperPageObject scraperPageObject;
     WebElementsToString webElementsToString;
     ApiService apiService;
 
+    WebDriver driver;
+
     @BeforeEach
     public void setup() {
-        websitePageObject = new WebsitePageObject();
-        scrapingService = new ScrapingService();
+        website = new Website();
+        scraperPageObject = new ScraperPageObject(driver);
         webElementsToString = new WebElementsToString();
         apiService = new ApiService();
 
-        websitePageObject.setScrapingService(webElementsToString);
-        websitePageObject.setWebsiteElementsService(scrapingService);
-        websitePageObject.setApiService(apiService);
+        website.setScrapingService(webElementsToString);
+        website.setWebsiteElementsService(scraperPageObject);
+        website.setApiService(apiService);
     }
 
     // Simple test to demonstrate the functionality of the scraper
     @Test
     public void simpleTest() throws Exception{
-        boolean isSuccessful = websitePageObject.productScrape("batman",5);
+        boolean isSuccessful = website.productScrape("batman",5);
         Assertions.assertTrue(isSuccessful);
     }
 }

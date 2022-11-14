@@ -6,18 +6,20 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import pageObjects.WebsitePageObject;
+import pageObjects.Website;
 import utils.ApiService;
 import utils.WebElementsToString;
-import utils.ScrapingService;
+import pageObjects.ScraperPageObject;
 
 import java.util.List;
 
 public class WebScraperCucumberTests {
 
-    WebsitePageObject websitePageObject;
-    ScrapingService scrapingService;
+    Website website;
+    WebDriver webDriver;
+    ScraperPageObject scrapingService;
     WebElementsToString webElementsToString;
     ApiService apiService;
 
@@ -25,9 +27,9 @@ public class WebScraperCucumberTests {
 
     @Given("I am a user of marketalertum")
     public void iAmAUserOfMarketalertum() {
-        websitePageObject = new WebsitePageObject();
-        scrapingService = new ScrapingService();
-        websitePageObject.setWebsiteElementsService(scrapingService);
+        website = new Website();
+        scrapingService = new ScraperPageObject(webDriver);
+        website.setWebsiteElementsService(scrapingService);
 
         userKey = "e7ee93d2-cf55-45da-a41e-6581361e3f20";
         scrapingService.setUpDriver("https://www.marketalertum.com/Alerts/Login");
@@ -71,19 +73,19 @@ public class WebScraperCucumberTests {
 
     @Given("I am an administrator of the website and I upload {int} alerts")
     public void iAmAnAdministratorOfTheWebsiteAndIUploadAlerts(int arg0) throws Exception {
-        websitePageObject = new WebsitePageObject();
+        website = new Website();
         apiService = new ApiService();
-        scrapingService = new ScrapingService();
+        scrapingService = new ScraperPageObject(webDriver);
         webElementsToString = new WebElementsToString();
 
-        websitePageObject.setApiService(apiService);
-        websitePageObject.setWebsiteElementsService(scrapingService);
-        websitePageObject.setScrapingService(webElementsToString);
+        website.setApiService(apiService);
+        website.setWebsiteElementsService(scrapingService);
+        website.setScrapingService(webElementsToString);
 
         // Clear any previous alerts
         apiService.sendDeleteRequests();
 
-        boolean isSuccessful = websitePageObject.productScrape("batman", arg0);
+        boolean isSuccessful = website.productScrape("batman", arg0);
         Assertions.assertTrue(isSuccessful);
     }
 
@@ -114,7 +116,7 @@ public class WebScraperCucumberTests {
     @And("each alert should contain a heading")
     public void eachAlertShouldContainAHeading() {
         webElementsToString = new WebElementsToString();
-        websitePageObject.setScrapingService(webElementsToString);
+        website.setScrapingService(webElementsToString);
 
         List<WebElement> headingElements = scrapingService.getDriver()
                 .findElements(By.xpath("//table[@border = 1]/tbody/tr/td/h4/img"));
@@ -167,19 +169,19 @@ public class WebScraperCucumberTests {
 
     @Given("I am an administrator of the website and I upload more than {int} alerts")
     public void iAmAnAdministratorOfTheWebsiteAndIUploadMoreThanAlerts(int arg0) throws Exception {
-        websitePageObject = new WebsitePageObject();
+        website = new Website();
         apiService = new ApiService();
-        scrapingService = new ScrapingService();
+        scrapingService = new ScraperPageObject(webDriver);
         webElementsToString = new WebElementsToString();
 
-        websitePageObject.setApiService(apiService);
-        websitePageObject.setScrapingService(webElementsToString);
-        websitePageObject.setWebsiteElementsService(scrapingService);
+        website.setApiService(apiService);
+        website.setScrapingService(webElementsToString);
+        website.setWebsiteElementsService(scrapingService);
 
         // Clear any previous alerts
         apiService.sendDeleteRequests();
 
-        websitePageObject.productScrape("batman", arg0+1);
+        website.productScrape("batman", arg0+1);
     }
 
     @When("I view a list of alerts I should see {int} alerts")
@@ -200,10 +202,10 @@ public class WebScraperCucumberTests {
 
     @Given("I am an administrator of the website and I upload an alert of type {int}")
     public void iAmAnAdministratorOfTheWebsiteAndIUploadAnAlertOfTypeAlertType(int alertType) throws Exception {
-        websitePageObject = new WebsitePageObject();
+        website = new Website();
         apiService = new ApiService();
 
-        websitePageObject.setApiService(apiService);
+        website.setApiService(apiService);
 
         // Clear any previous alerts
         apiService.sendDeleteRequests();

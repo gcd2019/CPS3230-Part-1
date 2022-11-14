@@ -3,15 +3,14 @@ package pageObjects;
 import org.openqa.selenium.WebElement;
 import utils.ApiService;
 import utils.WebElementsToString;
-import utils.ScrapingService;
 
 import java.util.List;
 
-public class WebsitePageObject {
+public class Website {
 
     protected ApiService apiService;
     protected WebElementsToString webElementsToString;
-    protected ScrapingService scrapingService;
+    protected ScraperPageObject scrapingService;
 
     public void setScrapingService(WebElementsToString webElementsToString) {
         this.webElementsToString = webElementsToString;
@@ -21,7 +20,7 @@ public class WebsitePageObject {
         this.apiService = apiService;
     }
 
-    public void setWebsiteElementsService(ScrapingService scrapingService) {
+    public void setWebsiteElementsService(ScraperPageObject scrapingService) {
         this.scrapingService = scrapingService;
     }
 
