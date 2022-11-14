@@ -8,7 +8,7 @@ import utils.ApiService;
 import utils.ScrapingService;
 import utils.WebElementsToString;
 
-public class Test2 {
+public class SimpleTest {
     WebsitePageObject websitePageObject;
     ScrapingService scrapingService;
     WebElementsToString webElementsToString;
@@ -26,6 +26,7 @@ public class Test2 {
         websitePageObject.setApiService(apiService);
     }
 
+    // Simple test to demonstrate the functionality of the scraper
     @Test
     public void simpleTest() throws Exception{
         boolean isSuccessful = websitePageObject.productScrape("batman",5);

@@ -34,11 +34,6 @@ public class WebsiteTests {
         websitePageObject.setApiService(apiService);
     }
 
-//    @AfterEach
-//    public void teardown() {
-//        websiteElementsService.quitDriver();
-//    }
-
     @Test
     public void testCheckTheCurrentWebsiteUrl() {
         WebDriver driver = Mockito.mock(WebDriver.class);
@@ -80,6 +75,17 @@ public class WebsiteTests {
         boolean isSearchSuccessful = mock.searchForProduct("harry potter");
 
         Assertions.assertTrue(isSearchSuccessful);
+    }
+
+    @Test
+    public void testFailingSimpleWebSearch(){
+        ScrapingService mock = Mockito.mock(ScrapingService.class);
+
+        Mockito.when(mock.searchForProduct(null)).thenReturn(false);
+
+        boolean isSearchSuccessful = mock.searchForProduct(null);
+
+        Assertions.assertFalse(isSearchSuccessful);
     }
 
     @Test
@@ -196,5 +202,29 @@ public class WebsiteTests {
         boolean isSuccessful = mock.scrapePrices(list, 2);
 
         Assertions.assertFalse(isSuccessful);
+    }
+
+    @Test
+    public void testSendAPostRequest() throws Exception {
+        ApiService mock = Mockito.mock(ApiService.class);
+
+        Mockito.when(mock.sendPostRequests(anyInt(), anyString(), anyString(), anyString(),
+                anyString(), anyInt())).thenReturn(true);
+
+        boolean isSuccessful = mock.sendPostRequests(6, "title", "descrip", "hhajehjshjes"
+                ,"sjajjajaj", 1000);
+
+        Assertions.assertTrue(isSuccessful);
+    }
+
+    @Test
+    public void testSendADeleteRequest() throws Exception {
+        ApiService mock = Mockito.mock(ApiService.class);
+
+        Mockito.when(mock.sendDeleteRequests()).thenReturn(true);
+
+        boolean isSuccessful = mock.sendDeleteRequests();
+
+        Assertions.assertTrue(isSuccessful);
     }
 }
